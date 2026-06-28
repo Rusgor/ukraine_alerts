@@ -131,7 +131,7 @@ class _AlertsMapScreenState extends State<AlertsMapScreen> {
                             final alert = _controller.alerts[index];
 
                             return _AlertCard(
-                              region: alert.regionName,
+                              region: alert.locationTitle,
                               date: alert.startedAt.toString(),
                             );
                           },

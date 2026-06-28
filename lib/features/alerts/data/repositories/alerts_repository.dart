@@ -6,7 +6,7 @@ class AlertsRepository {
 
   final ApiClient _apiClient = ApiClient();
 
-  Future<List<AlertModel>> getActiveAlerts() {
+  Future<List<AlertModel>> getActiveAlerts() async {
     return _apiClient.getActiveAlerts();
   }
 }
