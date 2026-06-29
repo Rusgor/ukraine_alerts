@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../../data/models/alert_model.dart';
 import '../../domain/models/ukraine_region.dart';
@@ -11,7 +12,10 @@ class AlertsMapController extends ChangeNotifier {
   String? error;
 
   List<AlertModel> alerts = [];
+
   final Map<UkraineRegion, AlertModel> activeRegions = {};
+
+  Timer? _timer;
 
   Future<void> loadAlerts() async {
     isLoading = true;
@@ -33,6 +37,10 @@ class AlertsMapController extends ChangeNotifier {
           activeRegions[region] = alert;
         }
       }
+      // DEBUG
+      activeRegions[UkraineRegion.kyiv] = alerts.first;
+      activeRegions[UkraineRegion.kharkiv] = alerts.first;
+      activeRegions[UkraineRegion.odesa] = alerts.first;
 
       debugPrint('Loaded oblast alerts: ${alerts.length}');
       debugPrint('Unique active regions: ${activeRegions.length}');
@@ -52,5 +60,17 @@ class AlertsMapController extends ChangeNotifier {
 
   bool isRegionActive(UkraineRegion region) {
     return activeRegions.containsKey(region);
+  }
+
+  void startAutoRefresh() {
+    _timer?.cancel();
+
+    _timer = Timer.periodic(const Duration(seconds: 30), (_) => loadAlerts());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 }

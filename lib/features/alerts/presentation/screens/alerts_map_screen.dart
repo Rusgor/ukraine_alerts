@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/ukraine_region.dart';
+import '../widgets/ukraine_map_widget.dart';
 import '../controllers/alerts_map_controller.dart';
 
 class AlertsMapScreen extends StatefulWidget {
@@ -17,6 +17,13 @@ class _AlertsMapScreenState extends State<AlertsMapScreen> {
     super.initState();
 
     _controller.loadAlerts();
+    _controller.startAutoRefresh();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -85,33 +92,7 @@ class _AlertsMapScreenState extends State<AlertsMapScreen> {
                   //-----------------------------------
                   // Ukraine Map
                   //-----------------------------------
-                  SizedBox(
-                    height: 261,
-                    width: double.infinity,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 18),
-                          child: Image.asset(
-                            'assets/images/ukraine_map.png',
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-
-                        if (_controller.isRegionActive(UkraineRegion.luhansk))
-                          const Positioned(
-                            top: 40,
-                            right: 70,
-                            child: Icon(
-                              Icons.circle,
-                              color: Colors.red,
-                              size: 18,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+                  UkraineMapWidget(controller: _controller),
 
                   const SizedBox(height: 18),
 
