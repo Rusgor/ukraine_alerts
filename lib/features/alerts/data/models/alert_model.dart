@@ -1,3 +1,5 @@
+import '../../domain/models/ukraine_region.dart';
+
 class AlertModel {
   const AlertModel({
     required this.id,
@@ -10,23 +12,19 @@ class AlertModel {
   });
 
   final int id;
-
-  final String locationUid;
-
+  final int locationUid;
   final String locationTitle;
-
   final String locationType;
-
   final String locationOblast;
-
   final String alertType;
-
   final DateTime startedAt;
+
+  UkraineRegion? get region => UkraineRegion.fromUid(locationUid);
 
   factory AlertModel.fromJson(Map<String, dynamic> json) {
     return AlertModel(
       id: json['id'] as int,
-      locationUid: json['location_uid'].toString(),
+      locationUid: int.parse(json['location_uid'].toString()),
       locationTitle: json['location_title'] as String,
       locationType: json['location_type'] as String,
       locationOblast: json['location_oblast'] as String,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../domain/models/ukraine_region.dart';
 import '../controllers/alerts_map_controller.dart';
 
 class AlertsMapScreen extends StatefulWidget {
@@ -87,12 +88,28 @@ class _AlertsMapScreenState extends State<AlertsMapScreen> {
                   SizedBox(
                     height: 261,
                     width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Image.asset(
-                        'assets/images/ukraine_map.png',
-                        fit: BoxFit.contain,
-                      ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: Image.asset(
+                            'assets/images/ukraine_map.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+
+                        if (_controller.isRegionActive(UkraineRegion.luhansk))
+                          const Positioned(
+                            top: 40,
+                            right: 70,
+                            child: Icon(
+                              Icons.circle,
+                              color: Colors.red,
+                              size: 18,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
 
@@ -127,11 +144,14 @@ class _AlertsMapScreenState extends State<AlertsMapScreen> {
                           itemCount: _controller.alerts.length,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 10),
+
                           itemBuilder: (context, index) {
                             final alert = _controller.alerts[index];
 
+                            final region = alert.region;
+
                             return _AlertCard(
-                              region: alert.locationTitle,
+                              region: region?.title ?? alert.locationTitle,
                               date: alert.startedAt.toString(),
                             );
                           },
