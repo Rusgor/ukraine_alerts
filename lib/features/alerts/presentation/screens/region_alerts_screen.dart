@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../data/location_items.dart';
 import '../controllers/region_alerts_controller.dart';
 
-
 class RegionAlertsScreen extends StatefulWidget {
   const RegionAlertsScreen({super.key});
 
@@ -29,10 +28,7 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: const Text("Region Alerts"),
-            centerTitle: true,
-          ),
+          appBar: AppBar(title: const Text("Region Alerts"), centerTitle: true),
           body: AnimatedContainer(
             duration: const Duration(milliseconds: 500),
             color: backgroundColor,
@@ -46,10 +42,8 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
                     label: const Text("Оберіть регіон"),
                     dropdownMenuEntries: locationItems
                         .map(
-                          (item) => DropdownMenuEntry(
-                            value: item,
-                            label: item.title,
-                          ),
+                          (item) =>
+                              DropdownMenuEntry(value: item, label: item.title),
                         )
                         .toList(),
                     onSelected: (value) {
@@ -123,9 +117,7 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
                               if (_controller.selectedLocation != null)
                                 Text(
                                   _controller.selectedLocation!.title,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                  ),
+                                  style: const TextStyle(fontSize: 18),
                                   textAlign: TextAlign.center,
                                 ),
                             ],
