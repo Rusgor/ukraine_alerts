@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../widgets/ukraine_map_widget.dart';
+import '../widgets/map_calibration_panel.dart';
 import '../controllers/alerts_map_controller.dart';
+import '../controllers/map_calibration_controller.dart';
 
 class AlertsMapScreen extends StatefulWidget {
   const AlertsMapScreen({super.key});
@@ -12,17 +15,24 @@ class AlertsMapScreen extends StatefulWidget {
 class _AlertsMapScreenState extends State<AlertsMapScreen> {
   final AlertsMapController _controller = AlertsMapController();
 
+  final MapCalibrationController _calibrationController =
+      MapCalibrationController();
+
   @override
   void initState() {
     super.initState();
 
     _controller.loadAlerts();
+
     _controller.startAutoRefresh();
   }
 
   @override
   void dispose() {
+    _controller.stopAutoRefresh();
+
     _controller.dispose();
+
     super.dispose();
   }
 
@@ -30,119 +40,159 @@ class _AlertsMapScreenState extends State<AlertsMapScreen> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, _) {
+      builder: (context, child) {
         return Scaffold(
           backgroundColor: const Color(0xFFACDCF7),
-          body: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF7EC8F2), Color(0xFFACDCF7)],
-              ),
-            ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  //-----------------------------------
-                  // AppBar
-                  //-----------------------------------
-                  Container(
-                    color: const Color(0xFFBFDDF3),
-                    padding: const EdgeInsets.only(
-                      left: 6,
-                      right: 6,
-                      top: 8,
-                      bottom: 8,
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(
-                            Icons.arrow_back_ios_new,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const Expanded(
-                          child: Text(
-                            'Alerts Map',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.refresh_outlined,
-                            size: 28,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
+
+          body: Stack(
+            children: [
+              //------------------------------------
+              // Main Screen
+              //------------------------------------
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFF7EC8F2), Color(0xFFACDCF7)],
                   ),
+                ),
 
-                  const SizedBox(height: 12),
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      //------------------------------------
+                      // APP BAR
+                      //------------------------------------
+                      Container(
+                        color: const Color(0xFFBFDDF3),
 
-                  //-----------------------------------
-                  // Ukraine Map
-                  //-----------------------------------
-                  UkraineMapWidget(controller: _controller),
+                        padding: const EdgeInsets.only(
+                          left: 6,
+                          right: 6,
+                          top: 8,
+                          bottom: 8,
+                        ),
 
-                  const SizedBox(height: 18),
-
-                  //-----------------------------------
-                  // Cards
-                  //-----------------------------------
-                  Expanded(
-                    child: Builder(
-                      builder: (context) {
-                        if (_controller.isLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (_controller.error != null) {
-                          return Center(
-                            child: Text(
-                              _controller.error!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 18,
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new,
+                                color: Colors.black87,
                               ),
                             ),
-                          );
-                        }
 
-                        return ListView.separated(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: _controller.alerts.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 10),
+                            const Expanded(
+                              child: Text(
+                                'Alerts Map',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
 
-                          itemBuilder: (context, index) {
-                            final alert = _controller.alerts[index];
+                            IconButton(
+                              onPressed: () {
+                                _controller.loadAlerts();
+                              },
+                              icon: const Icon(
+                                Icons.refresh_outlined,
+                                size: 28,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
-                            final region = alert.region;
+                      const SizedBox(height: 12),
 
-                            return _AlertCard(
-                              region: region?.title ?? alert.locationTitle,
-                              date: alert.startedAt.toString(),
+                      //------------------------------------
+                      // MAP
+                      //------------------------------------
+                      UkraineMapWidget(controller: _controller),
+
+                      const SizedBox(height: 18),
+
+                      //------------------------------------
+                      // ALERT LIST
+                      //------------------------------------
+                      Expanded(
+                        child: Builder(
+                          builder: (context) {
+                            if (_controller.isLoading) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            if (_controller.error != null) {
+                              return Center(
+                                child: Text(
+                                  _controller.error!,
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return ListView.separated(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+
+                              itemCount: _controller.alerts.length,
+
+                              separatorBuilder: (context, index) {
+                                return const SizedBox(height: 10);
+                              },
+
+                              itemBuilder: (context, index) {
+                                final alert = _controller.alerts[index];
+
+                                final region = alert.region;
+
+                                return _AlertCard(
+                                  region: region?.title ?? alert.locationTitle,
+
+                                  date: alert.startedAt.toString(),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              //------------------------------------
+              // CALIBRATION PANEL
+              //------------------------------------
+              if (kDebugMode)
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+
+                  child: SizedBox(
+                    width: 260,
+
+                    child: MapCalibrationPanel(
+                      controller: _calibrationController,
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+            ],
           ),
         );
       },

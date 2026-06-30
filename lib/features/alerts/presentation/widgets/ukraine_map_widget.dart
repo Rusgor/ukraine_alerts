@@ -1,4 +1,5 @@
 import 'region_assets.dart';
+import 'region_layout.dart';
 import 'package:flutter/material.dart';
 import '../controllers/alerts_map_controller.dart';
 
@@ -34,12 +35,29 @@ class UkraineMapWidget extends StatelessWidget {
                   return const SizedBox.shrink();
                 }
 
-                return ColorFiltered(
-                  colorFilter: const ColorFilter.mode(
-                    Colors.red,
-                    BlendMode.srcATop,
+                final layout = RegionLayouts.layouts[region];
+
+                if (layout == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Positioned(
+                  left: layout.left,
+                  top: layout.top,
+                  width: layout.width,
+                  height: layout.height,
+                  child: GestureDetector(
+                    onTap: () {
+                      debugPrint('Pressed: ${region.title}');
+                    },
+                    child: ColorFiltered(
+                      colorFilter: const ColorFilter.mode(
+                        Colors.red,
+                        BlendMode.srcATop,
+                      ),
+                      child: Image.asset(asset, fit: BoxFit.contain),
+                    ),
                   ),
-                  child: Image.asset(asset, fit: BoxFit.contain),
                 );
               }),
             ],

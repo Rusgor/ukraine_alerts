@@ -37,10 +37,19 @@ class AlertsMapController extends ChangeNotifier {
           activeRegions[region] = alert;
         }
       }
-      // DEBUG
-      activeRegions[UkraineRegion.kyiv] = alerts.first;
-      activeRegions[UkraineRegion.kharkiv] = alerts.first;
-      activeRegions[UkraineRegion.odesa] = alerts.first;
+
+      // =====================================================
+      // DEBUG MODE
+      // Тимчасово підсвічуємо ще кілька областей,
+      // щоб перевірити правильність PNG-overlay.
+      // Пізніше цей блок буде видалений.
+      // =====================================================
+
+      if (alerts.isNotEmpty) {
+        activeRegions[UkraineRegion.kyiv] = alerts.first;
+        activeRegions[UkraineRegion.kharkiv] = alerts.first;
+        activeRegions[UkraineRegion.odesa] = alerts.first;
+      }
 
       debugPrint('Loaded oblast alerts: ${alerts.length}');
       debugPrint('Unique active regions: ${activeRegions.length}');
@@ -68,9 +77,14 @@ class AlertsMapController extends ChangeNotifier {
     _timer = Timer.periodic(const Duration(seconds: 30), (_) => loadAlerts());
   }
 
+  void stopAutoRefresh() {
+    _timer?.cancel();
+    _timer = null;
+  }
+
   @override
   void dispose() {
-    _timer?.cancel();
+    stopAutoRefresh();
     super.dispose();
   }
 }
