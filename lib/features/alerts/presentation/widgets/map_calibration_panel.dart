@@ -10,123 +10,86 @@ class MapCalibrationPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
-      builder: (context, _) {
-        return Container(
-          margin: const EdgeInsets.all(12),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Calibration",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+      builder: (context, child) {
+        return Card(
+          elevation: 8,
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Map Calibration',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
 
-              const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
-              //----------------------------------
-              // Move
-              //----------------------------------
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: controller.moveUp,
-                    icon: const Icon(Icons.keyboard_arrow_up),
-                  ),
-                ],
-              ),
+                Text('X: ${controller.left.toStringAsFixed(1)}'),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: controller.moveLeft,
-                    icon: const Icon(Icons.keyboard_arrow_left),
-                  ),
+                Text('Y: ${controller.top.toStringAsFixed(1)}'),
 
-                  IconButton(
-                    onPressed: controller.moveDown,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                  ),
+                Text('Width: ${controller.width.toStringAsFixed(1)}'),
 
-                  IconButton(
-                    onPressed: controller.moveRight,
-                    icon: const Icon(Icons.keyboard_arrow_right),
-                  ),
-                ],
-              ),
+                const SizedBox(height: 12),
 
-              const Divider(),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    ElevatedButton(
+                      onPressed: controller.moveUp,
+                      child: const Text('↑'),
+                    ),
+                    ElevatedButton(
+                      onPressed: controller.moveDown,
+                      child: const Text('↓'),
+                    ),
+                    ElevatedButton(
+                      onPressed: controller.moveLeft,
+                      child: const Text('←'),
+                    ),
+                    ElevatedButton(
+                      onPressed: controller.moveRight,
+                      child: const Text('→'),
+                    ),
+                  ],
+                ),
 
-              //----------------------------------
-              // Width
-              //----------------------------------
-              Row(
-                children: [
-                  const Expanded(child: Text("Width")),
+                const SizedBox(height: 10),
 
-                  IconButton(
-                    onPressed: controller.decreaseWidth,
-                    icon: const Icon(Icons.remove),
-                  ),
+                Wrap(
+                  spacing: 6,
+                  children: [
+                    ElevatedButton(
+                      onPressed: controller.decreaseWidth,
+                      child: const Text('- Width'),
+                    ),
+                    ElevatedButton(
+                      onPressed: controller.increaseWidth,
+                      child: const Text('+ Width'),
+                    ),
+                  ],
+                ),
 
-                  Text(controller.width.toStringAsFixed(0)),
+                const SizedBox(height: 10),
 
-                  IconButton(
-                    onPressed: controller.increaseWidth,
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-
-              //----------------------------------
-              // Height
-              //----------------------------------
-              Row(
-                children: [
-                  const Expanded(child: Text("Height")),
-
-                  IconButton(
-                    onPressed: controller.decreaseHeight,
-                    icon: const Icon(Icons.remove),
-                  ),
-
-                  Text(controller.height.toStringAsFixed(0)),
-
-                  IconButton(
-                    onPressed: controller.increaseHeight,
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-
-              const Divider(),
-
-              Text("Left : ${controller.left.toStringAsFixed(0)}"),
-              Text("Top : ${controller.top.toStringAsFixed(0)}"),
-
-              const SizedBox(height: 8),
-
-              ElevatedButton(
-                onPressed: () {
-                  debugPrint(controller.exportLayout());
-                },
-                child: const Text("Print Layout"),
-              ),
-
-              const SizedBox(height: 8),
-
-              ElevatedButton(
-                onPressed: controller.reset,
-                child: const Text("Reset"),
-              ),
-            ],
+                Wrap(
+                  spacing: 6,
+                  children: [
+                    ElevatedButton(
+                      onPressed: controller.printCurrentPosition,
+                      child: const Text('Print'),
+                    ),
+                    ElevatedButton(
+                      onPressed: controller.reset,
+                      child: const Text('Reset'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },
