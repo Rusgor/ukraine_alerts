@@ -1,84 +1,91 @@
+import '../models/region_position.dart';
 import 'package:flutter/foundation.dart';
 
 class MapCalibrationController extends ChangeNotifier {
-  double left = 0;
-  double top = 0;
-  double width = 420;
-  double height = 261;
+  MapCalibrationController();
 
-  //----------------------------------
+  RegionPosition position = RegionPosition(left: 0, top: 0, width: 120);
+
+  //==================================================
+  // Compatibility API (для поточної Calibration Panel)
+  //==================================================
+
+  double get left => position.left;
+
+  double get top => position.top;
+
+  double get width => position.width;
+
+  // Поки використовуємо квадратний PNG
+  double get height => position.width;
+
+  //==================================================
   // Move
-  //----------------------------------
+  //==================================================
 
-  void moveLeft([double step = 1]) {
-    left -= step;
+  void moveLeft() {
+    position.left -= 1;
     notifyListeners();
   }
 
-  void moveRight([double step = 1]) {
-    left += step;
+  void moveRight() {
+    position.left += 1;
     notifyListeners();
   }
 
-  void moveUp([double step = 1]) {
-    top -= step;
+  void moveUp() {
+    position.top -= 1;
     notifyListeners();
   }
 
-  void moveDown([double step = 1]) {
-    top += step;
+  void moveDown() {
+    position.top += 1;
     notifyListeners();
   }
 
-  //----------------------------------
+  //==================================================
   // Resize
-  //----------------------------------
+  //==================================================
 
-  void increaseWidth([double step = 1]) {
-    width += step;
+  void increaseWidth() {
+    position.width += 1;
     notifyListeners();
   }
 
-  void decreaseWidth([double step = 1]) {
-    width -= step;
-    notifyListeners();
+  void decreaseWidth() {
+    if (position.width > 10) {
+      position.width -= 1;
+      notifyListeners();
+    }
   }
 
-  void increaseHeight([double step = 1]) {
-    height += step;
-    notifyListeners();
+  void increaseHeight() {
+    increaseWidth();
   }
 
-  void decreaseHeight([double step = 1]) {
-    height -= step;
-    notifyListeners();
+  void decreaseHeight() {
+    decreaseWidth();
   }
 
-  //----------------------------------
+  //==================================================
   // Reset
-  //----------------------------------
+  //==================================================
 
   void reset() {
-    left = 0;
-    top = 0;
-    width = 420;
-    height = 261;
+    position = RegionPosition(left: 0, top: 0, width: 120);
 
     notifyListeners();
   }
 
-  //----------------------------------
+  //==================================================
   // Export
-  //----------------------------------
+  //==================================================
 
   String exportLayout() {
-    return '''
-RegionLayout(
-  left: ${left.toStringAsFixed(0)},
-  top: ${top.toStringAsFixed(0)},
-  width: ${width.toStringAsFixed(0)},
-  height: ${height.toStringAsFixed(0)},
-)
-''';
+    return position.toString();
+  }
+
+  void printCurrentPosition() {
+    debugPrint(position.toString());
   }
 }
