@@ -34,7 +34,7 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
 
             backgroundColor: alert == true
                 ? const Color(0xFFD98787)
-                : const Color(0xFFDDF0D8),
+                : const Color(0xFFD5EED1),
 
             leading: IconButton(
               icon: const Icon(
