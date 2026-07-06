@@ -1,0 +1,32 @@
+import '../domain/models/location_item.dart';
+
+const List<LocationItem> locationItems = [
+  LocationItem(uid: 31, title: 'м. Київ'),
+
+  LocationItem(uid: 4, title: 'Вінницька область'),
+  LocationItem(uid: 8, title: 'Волинська область'),
+  LocationItem(uid: 9, title: 'Дніпропетровська область'),
+  LocationItem(uid: 28, title: 'Донецька область'),
+  LocationItem(uid: 10, title: 'Житомирська область'),
+  LocationItem(uid: 11, title: 'Закарпатська область'),
+  LocationItem(uid: 12, title: 'Запорізька область'),
+  LocationItem(uid: 13, title: 'Івано-Франківська область'),
+  LocationItem(uid: 14, title: 'Київська область'),
+  LocationItem(uid: 15, title: 'Кіровоградська область'),
+  LocationItem(uid: 16, title: 'Луганська область'),
+  LocationItem(uid: 27, title: 'Львівська область'),
+  LocationItem(uid: 17, title: 'Миколаївська область'),
+  LocationItem(uid: 18, title: 'Одеська область'),
+  LocationItem(uid: 19, title: 'Полтавська область'),
+  LocationItem(uid: 5, title: 'Рівненська область'),
+  LocationItem(uid: 20, title: 'Сумська область'),
+  LocationItem(uid: 21, title: 'Тернопільська область'),
+  LocationItem(uid: 22, title: 'Харківська область'),
+  LocationItem(uid: 23, title: 'Херсонська область'),
+  LocationItem(uid: 3, title: 'Хмельницька область'),
+  LocationItem(uid: 24, title: 'Черкаська область'),
+  LocationItem(uid: 26, title: 'Чернівецька область'),
+  LocationItem(uid: 25, title: 'Чернігівська область'),
+  LocationItem(uid: 29, title: 'АР Крим'),
+  LocationItem(uid: 30, title: 'м. Севастополь'),
+];
