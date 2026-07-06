@@ -17,252 +17,284 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, child) {
-        Color backgroundColor;
-
-        if (_controller.isAlertActive == true) {
-          backgroundColor = const Color(0xFFFFD7D7);
-        } else if (_controller.isAlertActive == false) {
-          backgroundColor = const Color(0xFFD9FFD9);
-        } else {
-          backgroundColor = Colors.white;
-        }
+      builder: (context, _) {
+        final bool? alert = _controller.isAlertActive;
 
         return Scaffold(
+          backgroundColor: Colors.transparent,
+
           appBar: AppBar(
+            backgroundColor: const Color(0xFFEAF7E8),
             elevation: 2,
             shadowColor: const Color(0x22000000),
             surfaceTintColor: Colors.transparent,
-            scrolledUnderElevation: 2,
-
             centerTitle: true,
-
-            backgroundColor: const Color(0xFFF2FAF0),
 
             leading: IconButton(
               icon: const Icon(
                 Icons.arrow_back_ios_new,
-                color: Colors.black87,
                 size: 22,
+                color: Colors.black87,
               ),
               onPressed: () => context.pop(),
             ),
 
             title: const Text(
-              "Region Alerts",
+              'Region Alerts',
               style: TextStyle(
-                color: Colors.black87,
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
+                color: Colors.black87,
               ),
             ),
 
             actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: IconButton(
-                  tooltip: "Оновити",
-                  onPressed: () => _controller.loadAlert(),
-                  icon: const Icon(
-                    Icons.refresh_rounded,
-                    color: Colors.black87,
-                    size: 24,
-                  ),
+              IconButton(
+                tooltip: 'Оновити',
+                icon: const Icon(
+                  Icons.refresh_rounded,
+                  color: Colors.black87,
+                  size: 24,
                 ),
+                onPressed: () => _controller.loadAlert(),
               ),
             ],
           ),
 
           body: AnimatedContainer(
-            duration: const Duration(milliseconds: 500),
-            color: backgroundColor,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            duration: const Duration(milliseconds: 350),
 
-              child: Column(
-                children: [
-                  Container(
-                    height: 58,
-                    width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
 
-                    decoration: BoxDecoration(
-                      color: Colors.white,
+                colors: [
+                  alert == true
+                      ? const Color(0xFFFFCACA)
+                      : const Color(0xFF00B050),
 
-                      borderRadius: BorderRadius.circular(20),
+                  alert == true
+                      ? const Color(0xFFFFE7E7)
+                      : const Color(0xFF69F45B),
+                ],
+              ),
+            ),
 
-                      boxShadow: const [
-                        BoxShadow(
-                          blurRadius: 8,
-                          offset: Offset(0, 3),
-                          color: Color(0x15000000),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+
+                child: Column(
+                  children: [
+                    //--------------------------------------------
+                    // DROPDOWN
+                    //--------------------------------------------
+                    Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(maxWidth: 393),
+
+                      height: 58,
+
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.92),
+
+                        borderRadius: BorderRadius.circular(18),
+
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x22000000),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+
+                      child: DropdownMenu(
+                        expandedInsets: EdgeInsets.zero,
+
+                        width: 361,
+
+                        initialSelection: _controller.selectedLocation,
+
+                        hintText: "Оберіть область",
+
+                        leadingIcon: const Icon(
+                          Icons.location_on_outlined,
+                          color: Color(0xFF1E3A5F),
                         ),
-                      ],
+
+                        trailingIcon: const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Color(0xFF1E3A5F),
+                        ),
+
+                        textStyle: const TextStyle(
+                          fontSize: 17,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+
+                        inputDecorationTheme: const InputDecorationTheme(
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 16,
+                          ),
+                        ),
+
+                        dropdownMenuEntries: locationItems
+                            .map(
+                              (item) => DropdownMenuEntry(
+                                value: item,
+                                label: item.title,
+                              ),
+                            )
+                            .toList(),
+
+                        onSelected: (value) {
+                          if (value == null) return;
+
+                          _controller.selectLocation(value);
+                          _controller.loadAlert();
+                        },
+                      ),
                     ),
-                    child: DropdownMenu(
-                      expandedInsets: EdgeInsets.zero,
-                      width: 361,
 
-                      hintText: "Оберіть область",
+                    const SizedBox(height: 165),
 
-                      initialSelection: _controller.selectedLocation,
-
-                      leadingIcon: const Icon(
-                        Icons.location_on_outlined,
-                        color: Colors.black54,
-                      ),
-
-                      trailingIcon: const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: Colors.black54,
-                      ),
-
-                      textStyle: const TextStyle(
-                        fontSize: 17,
-                        color: Colors.black87,
-                      ),
-
-                      inputDecorationTheme: const InputDecorationTheme(
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 15,
+                    //--------------------------------------------
+                    // STATES
+                    //--------------------------------------------
+                    if (_controller.isLoading)
+                      const Expanded(
+                        child: Center(
+                          child: CircularProgressIndicator(color: Colors.white),
                         ),
-                      ),
-
-                      dropdownMenuEntries: locationItems
-                          .map(
-                            (item) => DropdownMenuEntry(
-                              value: item,
-                              label: item.title,
+                      )
+                    else if (_controller.error != null)
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            _controller.error!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
-                          )
-                          .toList(),
-
-                      onSelected: (value) {
-                        if (value == null) return;
-
-                        _controller.selectLocation(value);
-                        _controller.loadAlert();
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 195),
-
-                  Expanded(
-                    child: Center(
-                      child: Builder(
-                        builder: (context) {
-                          if (_controller.isLoading) {
-                            return const CircularProgressIndicator();
-                          }
-
-                          if (_controller.error != null) {
-                            return Text(
-                              _controller.error!,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontSize: 18,
-                              ),
-                            );
-                          }
-
-                          if (_controller.isAlertActive == null) {
-                            return const Text(
-                              "Оберіть область зі списку",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            );
-                          }
-
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 350),
-
-                            width: 361,
+                          ),
+                        ),
+                      )
+                    else if (_controller.isAlertActive == null)
+                      const Expanded(
+                        child: Center(
+                          child: Text(
+                            "Оберіть область зі списку",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: Center(
+                          child: Container(
+                            width: double.infinity,
+                            constraints: const BoxConstraints(
+                              maxWidth: 393,
+                              minHeight: 158,
+                            ),
 
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,
                               vertical: 22,
                             ),
 
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.92),
-
-                              borderRadius: BorderRadius.circular(22),
-
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x14000000),
-                                  blurRadius: 12,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
+                            decoration: const BoxDecoration(
+                              color: Colors.transparent,
                             ),
 
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                CircleAvatar(
-                                  radius: 40,
-                                  backgroundColor: _controller.isAlertActive!
-                                      ? Colors.red
-                                      : const Color(0xFF22B14C),
+                                //------------------------------------
+                                // Circle
+                                //------------------------------------
+                                Container(
+                                  width: 82,
+                                  height: 82,
+
+                                  decoration: BoxDecoration(
+                                    color: _controller.isAlertActive!
+                                        ? const Color(0xFFFF5B5B)
+                                        : const Color(0xFF39FF14),
+
+                                    shape: BoxShape.circle,
+                                  ),
 
                                   child: Icon(
                                     _controller.isAlertActive!
                                         ? Icons.warning_rounded
                                         : Icons.check_rounded,
 
-                                    color: Colors.white,
-                                    size: 44,
+                                    size: 48,
+
+                                    color: _controller.isAlertActive!
+                                        ? Colors.white
+                                        : const Color(0xFF00B050),
                                   ),
                                 ),
 
-                                const SizedBox(height: 26),
+                                const SizedBox(height: 20),
 
+                                //------------------------------------
+                                // Text
+                                //------------------------------------
                                 Text(
                                   _controller.isAlertActive!
-                                      ? "Активна\nповітряна тривога"
+                                      ? "Активна тривога"
                                       : "Немає тривоги",
 
                                   textAlign: TextAlign.center,
 
                                   style: const TextStyle(
-                                    fontSize: 28,
+                                    color: Colors.white,
+                                    fontSize: 24,
                                     fontWeight: FontWeight.w700,
-                                    color: Colors.black87,
                                     height: 1.15,
                                   ),
                                 ),
 
-                                const SizedBox(height: 16),
+                                if (_controller.isAlertActive!) ...[
+                                  const SizedBox(height: 14),
 
-                                if (_controller.selectedLocation != null)
-                                  Text(
-                                    _controller.selectedLocation!.title,
+                                  const Text(
+                                    "Негайно пройдіть\nдо найближчого укриття",
 
                                     textAlign: TextAlign.center,
 
-                                    style: const TextStyle(
-                                      fontSize: 17,
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.w500,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      height: 1.35,
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
+                                ],
                               ],
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
