@@ -21,6 +21,7 @@ class RegionAlertsRepository {
     final json = jsonDecode(response.body);
 
     /// API повертає true / false
-    return json == true;
+
+    return json.toString() == 'A';
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/location_items.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../controllers/region_alerts_controller.dart';
 
 class RegionAlertsScreen extends StatefulWidget {
@@ -24,11 +25,16 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
           backgroundColor: Colors.transparent,
 
           appBar: AppBar(
-            backgroundColor: const Color(0xFFEAF7E8),
             elevation: 2,
             shadowColor: const Color(0x22000000),
             surfaceTintColor: Colors.transparent,
+            scrolledUnderElevation: 2,
+
             centerTitle: true,
+
+            backgroundColor: alert == true
+                ? const Color(0xFFD98787)
+                : const Color(0xFFDDF0D8),
 
             leading: IconButton(
               icon: const Icon(
@@ -40,7 +46,7 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
             ),
 
             title: const Text(
-              'Region Alerts',
+              "Region Alerts",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
@@ -50,7 +56,7 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
 
             actions: [
               IconButton(
-                tooltip: 'Оновити',
+                tooltip: "Оновити",
                 icon: const Icon(
                   Icons.refresh_rounded,
                   color: Colors.black87,
@@ -60,7 +66,6 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
               ),
             ],
           ),
-
           body: AnimatedContainer(
             duration: const Duration(milliseconds: 350),
 
@@ -69,31 +74,24 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
 
-                colors: [
-                  alert == true
-                      ? const Color(0xFFFFCACA)
-                      : const Color(0xFF00B050),
-
-                  alert == true
-                      ? const Color(0xFFFFE7E7)
-                      : const Color(0xFF69F45B),
-                ],
+                colors: alert == true
+                    ? const [Color(0xFFB10000), Color(0xFFFF1F1F)]
+                    : const [Color(0xFF00B050), Color(0xFF69F45B)],
               ),
             ),
 
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
 
                 child: Column(
                   children: [
-                    //--------------------------------------------
-                    // DROPDOWN
-                    //--------------------------------------------
+                    //-------------------------------------------------
+                    // Dropdown
+                    //-------------------------------------------------
                     Container(
                       width: double.infinity,
                       constraints: const BoxConstraints(maxWidth: 393),
-
                       height: 58,
 
                       decoration: BoxDecoration(
@@ -166,9 +164,9 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
 
                     const SizedBox(height: 165),
 
-                    //--------------------------------------------
+                    //-------------------------------------------------
                     // STATES
-                    //--------------------------------------------
+                    //-------------------------------------------------
                     if (_controller.isLoading)
                       const Expanded(
                         child: Center(
@@ -194,6 +192,7 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
                         child: Center(
                           child: Text(
                             "Оберіть область зі списку",
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 22,
@@ -205,91 +204,80 @@ class _RegionAlertsScreenState extends State<RegionAlertsScreen> {
                     else
                       Expanded(
                         child: Center(
-                          child: Container(
+                          child: SizedBox(
                             width: double.infinity,
-                            constraints: const BoxConstraints(
-                              maxWidth: 393,
-                              minHeight: 158,
-                            ),
+                            child: _controller.isAlertActive == false
+                                //==================================================
+                                // GREEN SCREEN (не змінюємо)
+                                //==================================================
+                                ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 82,
+                                        height: 82,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFF39FF14),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.check_rounded,
+                                          size: 50,
+                                          color: Color(0xFF00B050),
+                                        ),
+                                      ),
 
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 22,
-                            ),
+                                      const SizedBox(height: 22),
 
-                            decoration: const BoxDecoration(
-                              color: Colors.transparent,
-                            ),
+                                      const Text(
+                                        "Немає тривоги",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                //==================================================
+                                // RED SCREEN (Pixel Perfect Figma)
+                                //==================================================
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/icons/siren.svg',
+                                        width: 120,
+                                        height: 120,
+                                      ),
 
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                //------------------------------------
-                                // Circle
-                                //------------------------------------
-                                Container(
-                                  width: 82,
-                                  height: 82,
+                                      const SizedBox(height: 34),
 
-                                  decoration: BoxDecoration(
-                                    color: _controller.isAlertActive!
-                                        ? const Color(0xFFFF5B5B)
-                                        : const Color(0xFF39FF14),
+                                      const Text(
+                                        "Повітряна тривога!",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
 
-                                    shape: BoxShape.circle,
+                                      const SizedBox(height: 12),
+
+                                      const Text(
+                                        "Будь ласка, пройдіть до укриття",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.35,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-
-                                  child: Icon(
-                                    _controller.isAlertActive!
-                                        ? Icons.warning_rounded
-                                        : Icons.check_rounded,
-
-                                    size: 48,
-
-                                    color: _controller.isAlertActive!
-                                        ? Colors.white
-                                        : const Color(0xFF00B050),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 20),
-
-                                //------------------------------------
-                                // Text
-                                //------------------------------------
-                                Text(
-                                  _controller.isAlertActive!
-                                      ? "Активна тривога"
-                                      : "Немає тривоги",
-
-                                  textAlign: TextAlign.center,
-
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w700,
-                                    height: 1.15,
-                                  ),
-                                ),
-
-                                if (_controller.isAlertActive!) ...[
-                                  const SizedBox(height: 14),
-
-                                  const Text(
-                                    "Негайно пройдіть\nдо найближчого укриття",
-
-                                    textAlign: TextAlign.center,
-
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      height: 1.35,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
                           ),
                         ),
                       ),

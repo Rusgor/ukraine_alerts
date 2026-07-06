@@ -48,6 +48,8 @@ dependencies:
 
   http: ^1.2.2
 
+  flutter_svg: ^2.0.17
+
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +81,7 @@ flutter:
     - assets/images/
     - assets/maps/
     - assets/maps/oblasts/
+    - assets/icons/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
