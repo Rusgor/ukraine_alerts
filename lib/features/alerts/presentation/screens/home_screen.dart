@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
                     icon: Icons.map_outlined,
                     title: 'Alerts Map',
                     onPressed: () {
-                      context.go('/map');
+                      context.push('/map');
                     },
                   ),
                   const SizedBox(height: 16),
@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                     icon: Icons.location_city_outlined,
                     title: 'Region Alerts',
                     onPressed: () {
-                      context.go('/region');
+                      context.push('/region');
                     },
                   ),
                 ],

@@ -19,17 +19,17 @@ class RegionLayouts {
 
   static const Map<UkraineRegion, RegionLayout> layouts = {
     UkraineRegion.luhansk: RegionLayout(
-      left: 304,
-      top: 52,
-      width: 86,
-      height: 86,
+      left: 303,
+      top: 53,
+      width: 82,
+      height: 82,
     ),
 
     UkraineRegion.crimea: RegionLayout(
-      left: 0,
-      top: 0,
-      width: 420,
-      height: 261,
+      left: 192,
+      top: 178,
+      width: 88,
+      height: 56,
     ),
   };
 }

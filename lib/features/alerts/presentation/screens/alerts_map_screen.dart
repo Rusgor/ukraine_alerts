@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/ukraine_map_widget.dart';
-import '../widgets/map_calibration_panel.dart';
 import '../controllers/alerts_map_controller.dart';
-import '../controllers/map_calibration_controller.dart';
 
 class AlertsMapScreen extends StatefulWidget {
   const AlertsMapScreen({super.key});
@@ -15,24 +13,17 @@ class AlertsMapScreen extends StatefulWidget {
 class _AlertsMapScreenState extends State<AlertsMapScreen> {
   final AlertsMapController _controller = AlertsMapController();
 
-  final MapCalibrationController _calibrationController =
-      MapCalibrationController();
-
   @override
   void initState() {
     super.initState();
-
     _controller.loadAlerts();
-
     _controller.startAutoRefresh();
   }
 
   @override
   void dispose() {
     _controller.stopAutoRefresh();
-
     _controller.dispose();
-
     super.dispose();
   }
 
@@ -44,155 +35,132 @@ class _AlertsMapScreenState extends State<AlertsMapScreen> {
         return Scaffold(
           backgroundColor: const Color(0xFFACDCF7),
 
-          body: Stack(
-            children: [
-              //------------------------------------
-              // Main Screen
-              //------------------------------------
-              Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFF7EC8F2), Color(0xFFACDCF7)],
-                  ),
-                ),
-
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      //------------------------------------
-                      // APP BAR
-                      //------------------------------------
-                      Container(
-                        color: const Color(0xFFBFDDF3),
-
-                        padding: const EdgeInsets.only(
-                          left: 6,
-                          right: 6,
-                          top: 8,
-                          bottom: 8,
-                        ),
-
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(
-                                Icons.arrow_back_ios_new,
-                                color: Colors.black87,
-                              ),
-                            ),
-
-                            const Expanded(
-                              child: Text(
-                                'Alerts Map',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ),
-
-                            IconButton(
-                              onPressed: () {
-                                _controller.loadAlerts();
-                              },
-                              icon: const Icon(
-                                Icons.refresh_outlined,
-                                size: 28,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      //------------------------------------
-                      // MAP
-                      //------------------------------------
-                      UkraineMapWidget(controller: _controller),
-
-                      const SizedBox(height: 18),
-
-                      //------------------------------------
-                      // ALERT LIST
-                      //------------------------------------
-                      Expanded(
-                        child: Builder(
-                          builder: (context) {
-                            if (_controller.isLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-
-                            if (_controller.error != null) {
-                              return Center(
-                                child: Text(
-                                  _controller.error!,
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              );
-                            }
-
-                            return ListView.separated(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-
-                              itemCount: _controller.alerts.length,
-
-                              separatorBuilder: (context, index) {
-                                return const SizedBox(height: 10);
-                              },
-
-                              itemBuilder: (context, index) {
-                                final alert = _controller.alerts[index];
-
-                                final region = alert.region;
-
-                                return _AlertCard(
-                                  region: region?.title ?? alert.locationTitle,
-
-                                  date: alert.startedAt.toString(),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF7EC8F2), Color(0xFFACDCF7)],
               ),
+            ),
 
-              //------------------------------------
-              // CALIBRATION PANEL
-              //------------------------------------
-              if (kDebugMode)
-                Positioned(
-                  right: 16,
-                  bottom: 16,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  //--------------------------------------------------
+                  // APP BAR
+                  //--------------------------------------------------
+                  Container(
+                    height: 64,
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    color: const Color(0xFFBFDDF3),
 
-                  child: SizedBox(
-                    width: 260,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new),
 
-                    child: MapCalibrationPanel(
-                      controller: _calibrationController,
+                          onPressed: () => context.pop(),
+                        ),
+
+                        const Expanded(
+                          child: Text(
+                            "Alerts Map",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+
+                        IconButton(
+                          icon: const Icon(Icons.refresh),
+                          onPressed: _controller.loadAlerts,
+                        ),
+                      ],
                     ),
                   ),
-                ),
-            ],
+
+                  const SizedBox(height: 18),
+
+                  //--------------------------------------------------
+                  // MAP
+                  //--------------------------------------------------
+                  Center(
+                    child: SizedBox(
+                      width: 393,
+                      height: 261,
+                      child: UkraineMapWidget(controller: _controller),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  //--------------------------------------------------
+                  // ALERT LIST
+                  //--------------------------------------------------
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+
+                      child: Builder(
+                        builder: (context) {
+                          if (_controller.isLoading) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (_controller.error != null) {
+                            return Center(
+                              child: Text(
+                                _controller.error!,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 18,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+
+                          if (_controller.alerts.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                "Активних тривог немає",
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            );
+                          }
+
+                          return ListView.separated(
+                            physics: const BouncingScrollPhysics(),
+
+                            itemCount: _controller.alerts.length,
+
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 12),
+
+                            itemBuilder: (context, index) {
+                              final alert = _controller.alerts[index];
+
+                              return _AlertCard(
+                                region:
+                                    alert.region?.title ?? alert.locationTitle,
+
+                                date: alert.startedAt.toLocal(),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -204,24 +172,27 @@ class _AlertCard extends StatelessWidget {
   const _AlertCard({required this.region, required this.date});
 
   final String region;
-  final String date;
+  final DateTime date;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 361,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
+
       decoration: BoxDecoration(
-        color: const Color(0xFFC4E6F9),
-        borderRadius: BorderRadius.circular(10),
+        color: const Color(0xFFC7E5F7),
+
+        borderRadius: BorderRadius.circular(14),
+
         boxShadow: const [
           BoxShadow(
-            color: Color(0x40000000),
             blurRadius: 8,
             offset: Offset(2, 4),
+            color: Color(0x26000000),
           ),
         ],
       ),
+
       child: Row(
         children: [
           const Icon(Icons.warning_rounded, color: Colors.redAccent, size: 32),
@@ -231,11 +202,12 @@ class _AlertCard extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
                 Text(
                   region,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 19,
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,
                   ),
@@ -244,7 +216,12 @@ class _AlertCard extends StatelessWidget {
                 const SizedBox(height: 4),
 
                 Text(
-                  date,
+                  "${date.day.toString().padLeft(2, '0')}."
+                  "${date.month.toString().padLeft(2, '0')}."
+                  "${date.year}   "
+                  "${date.hour.toString().padLeft(2, '0')}:"
+                  "${date.minute.toString().padLeft(2, '0')}",
+
                   style: const TextStyle(color: Colors.red, fontSize: 13),
                 ),
               ],

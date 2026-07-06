@@ -10,59 +10,38 @@ class UkraineMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 261,
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18),
-        child: AspectRatio(
-          aspectRatio: 1.58,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              //-----------------------------------
-              // Base map
-              //-----------------------------------
-              Image.asset('assets/images/ukraine_map.png', fit: BoxFit.contain),
+    return AspectRatio(
+      aspectRatio: 420 / 261,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          //--------------------------------------------------
+          // Base map
+          //--------------------------------------------------
+          Image.asset(RegionAssets.baseMap, fit: BoxFit.contain),
 
-              //-----------------------------------
-              // Active region overlays
-              //-----------------------------------
-              ...controller.activeRegions.keys.map((region) {
-                final asset = RegionAssets.overlays[region];
+          //--------------------------------------------------
+          // Active alert overlays
+          //--------------------------------------------------
+          ...controller.activeRegions.keys.map((region) {
+            final overlay = RegionAssets.overlays[region];
+            final layout = RegionLayouts.layouts[region];
 
-                if (asset == null) {
-                  return const SizedBox.shrink();
-                }
+            if (overlay == null || layout == null) {
+              return const SizedBox.shrink();
+            }
 
-                final layout = RegionLayouts.layouts[region];
-
-                if (layout == null) {
-                  return const SizedBox.shrink();
-                }
-
-                return Positioned(
-                  left: layout.left,
-                  top: layout.top,
-                  width: layout.width,
-                  height: layout.height,
-                  child: GestureDetector(
-                    onTap: () {
-                      debugPrint('Pressed: ${region.title}');
-                    },
-                    child: ColorFiltered(
-                      colorFilter: const ColorFilter.mode(
-                        Colors.red,
-                        BlendMode.srcATop,
-                      ),
-                      child: Image.asset(asset, fit: BoxFit.contain),
-                    ),
-                  ),
-                );
-              }),
-            ],
-          ),
-        ),
+            return Positioned(
+              left: layout.left,
+              top: layout.top,
+              width: layout.width,
+              height: layout.height,
+              child: IgnorePointer(
+                child: Image.asset(overlay, fit: BoxFit.contain),
+              ),
+            );
+          }),
+        ],
       ),
     );
   }

@@ -26,40 +26,17 @@ class AlertsMapController extends ChangeNotifier {
     try {
       final result = await _repository.getActiveAlerts();
 
-      alerts = result.where((alert) => alert.locationType == 'oblast').toList();
+      alerts = result.where((e) => e.locationType == "oblast").toList();
 
       activeRegions.clear();
 
       for (final alert in alerts) {
-        final region = alert.region;
-
-        if (region != null) {
-          activeRegions[region] = alert;
+        if (alert.region != null) {
+          activeRegions[alert.region!] = alert;
         }
       }
-
-      // =====================================================
-      // DEBUG MODE
-      // Тимчасово підсвічуємо ще кілька областей,
-      // щоб перевірити правильність PNG-overlay.
-      // Пізніше цей блок буде видалений.
-      // =====================================================
-
-      if (alerts.isNotEmpty) {
-        activeRegions[UkraineRegion.kyiv] = alerts.first;
-        activeRegions[UkraineRegion.kharkiv] = alerts.first;
-        activeRegions[UkraineRegion.odesa] = alerts.first;
-      }
-
-      debugPrint('Loaded oblast alerts: ${alerts.length}');
-      debugPrint('Unique active regions: ${activeRegions.length}');
-    } catch (e, stackTrace) {
+    } catch (e) {
       error = e.toString();
-
-      debugPrint('================ ERROR ================');
-      debugPrint(error);
-      debugPrint(stackTrace.toString());
-      debugPrint('=======================================');
     }
 
     isLoading = false;
@@ -67,12 +44,12 @@ class AlertsMapController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isRegionActive(UkraineRegion region) {
-    return activeRegions.containsKey(region);
+  void refresh() {
+    loadAlerts();
   }
 
   void startAutoRefresh() {
-    _timer?.cancel();
+    stopAutoRefresh();
 
     _timer = Timer.periodic(const Duration(seconds: 30), (_) => loadAlerts());
   }
